@@ -23,13 +23,16 @@ app.use(express.json({ limit : "10mb" }));
 // });
 
 /*
-CREATE DATABASE travelix;
+CREATE DATABASE travelisx;
 
 USE travelix;
-CREATE TABLE thilak_travelix (destinationName varchar(255), location varchar(255), destinationImage LONGTEXT, destinationCount varchar(255), id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id));
+CREATE TABLE travelix_destinations (destinationName varchar(255), location varchar(255), destinationImage LONGTEXT, destinationCount varchar(255), id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id));
 
 USE travelix;
-CREATE TABLE thilak_hotel(name varchar(255), destination varchar(255), image LONGTEXT, price varchar(255), location varchar(255), available boolean, id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id));
+CREATE TABLE travelix_hotels(name varchar(255), destination varchar(255), image LONGTEXT, price varchar(255), location varchar(255), available boolean, id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(id));
+
+ALTER TABLE testing_database CHANGE `old_column` `new_column` data_type;
+
 */
 
 const connection = mysql.createConnection({
@@ -60,7 +63,7 @@ connection.connect((error) => {
 // }
 
 app.post("/api/create/destination", (request, response) => {
-  const sql_query = `INSERT INTO thilak_travelix (destinationName , location , destinationImage , destinationCount) VALUES ('${request.body.destinationName}', '${request.body.location}', '${request.body.destinationImage}', '${request.body.destinationCount}')`;
+  const sql_query = `INSERT INTO thilak_travelix_destinations (destinationName , location , destinationImage , destinationCount) VALUES ('${request.body.destinationName}', '${request.body.location}', '${request.body.destinationImage}', '${request.body.destinationCount}')`;
 
   connection.query(sql_query, (error, result) => {
     if(error){
@@ -76,7 +79,7 @@ app.post("/api/create/destination", (request, response) => {
 // Method : GET 
 
 app.get("/api/list/destination", (request, response) => {
-  const sql_query = `SELECT * FROM thilak_travelix`;
+  const sql_query = `SELECT * FROM thilak_travelix_destinations`;
   connection.query(sql_query, (error, result) => {
     if(error){
       response.status(500).send(error);
@@ -88,7 +91,7 @@ app.get("/api/list/destination", (request, response) => {
 })
 
 app.delete("/api/delete/destination/:id", (request, response) => {
-  const sql_query = `DELETE FROM thilak_travelix WHERE id=${request.params.id}`;
+  const sql_query = `DELETE FROM thilak_travelix_destinations WHERE id=${request.params.id}`;
   connection.query(sql_query, (error, result) => {
     if(error){
       response.status(500).send(error);
@@ -100,7 +103,7 @@ app.delete("/api/delete/destination/:id", (request, response) => {
 });
 
 app.post("/api/create/hotel", (request, response) => {
-  const sql_query =  `INSERT INTO thilak_hotel (name, destination, image, price, location, available) VALUES ('${request.body.name}', '${request.body.destination}', '${request.body.image}', '${request.body.price}',  '${request.body.location}', ${request.body.available})`;
+  const sql_query =  `INSERT INTO thilak_travelix_hotels (name, destination, image, price, location, available) VALUES ('${request.body.name}', '${request.body.destination}', '${request.body.image}', '${request.body.price}',  '${request.body.location}', ${request.body.available})`;
 
   connection.query(sql_query, (error, result) => {
     if(error){
@@ -113,7 +116,7 @@ app.post("/api/create/hotel", (request, response) => {
 })
 
 app.get("/api/load/hotels", (request, response) => {
-  const sql_query = `SELECT * FROM thilak_hotel`;
+  const sql_query = `SELECT * FROM thilak_travelix_hotels`;
   connection.query(sql_query, (error, result) => {
     if(error){
       response.status(500).send(error);
@@ -129,7 +132,7 @@ app.get("/api/search/destination", (request, response) => {
   const destinationName = request.query.destinationName;
   const destinationLocation = request.query.destinationLocation;
   
-  let sql_query = `SELECT * FROM thilak_travelix WHERE destinationName LIKE '${destinationName}%' AND location LIKE '${destinationLocation}%'`;
+  let sql_query = `SELECT * FROM thilak_travelix_destinations WHERE destinationName LIKE '${destinationName}%' AND location LIKE '${destinationLocation}%'`;
   
 
   if(destinationName == "" && destinationLocation == ""){
@@ -150,7 +153,7 @@ app.get("/api/search/destination", (request, response) => {
 app.get("/api/search/hotel", (request, response) => {
   const destinationName = request.query.destinationName;
 
-  const sql_query = `SELECT * from thilak_hotel WHERE destination LIKE '${destinationName}%'`;
+  const sql_query = `SELECT * from thilak_travelix_hotels WHERE destination LIKE '${destinationName}%'`;
 
 
   if(destinationName == ""){
